@@ -174,7 +174,8 @@ directly to a window-relative click.
 - `click`, `drag`, `press_key`, `type_text`, `perform_action`, and `set_value` can change real application state.
 - When ydotool is selected, `ydotoold` should run as a per-user service with its socket under `/run/user/$UID`, not as a system-wide service.
 - The optional ydotool backend requires version 1.0.3 or newer; `doctor` rejects older or semantically incompatible CLIs even when `ydotoold` is running.
-- On COSMIC, the standard npm, Cargo, and install-script paths install the `computer-use-linux-cosmic` helper automatically. Manual binary installs must copy both binaries.
+- On COSMIC, the standard npm, Cargo, and install-script paths install the `computer-use-linux-cosmic` helper automatically. Manual binary installs must copy it too.
+- An on-screen indicator shows the user each action: a cursor glides to pointer targets and keycaps or typed text appear for keyboard input. Pointer actions wait about 350 ms so the cursor lands first. The indicator is hidden before screenshots and is never part of captured images.
 
 ## Verification
 
@@ -194,7 +195,10 @@ Ready output should have:
 - `can_build_accessibility_tree: true`
 - `can_query_windows: true`
 - `can_send_development_input: true`
-- `can_capture_screenshots: true`
+- `screenshot_capture_status: "unverified"`
+- `can_capture_screenshots: false`
 - `blockers: []`
+
+Doctor detects screenshot routes without capturing or requesting consent. Treat unverified capture as a warning. Call `get_app_state` with `include_screenshot: true` to verify it: a successful raw capture reports `screenshot_capture_status: "verified"` and `can_capture_screenshots: true`; a failure reports `failed` and keeps the boolean false. Inspect `screenshot_error` for the full backend cause.
 
 Then test with your agent by calling the `doctor` tool or asking the agent to list desktop windows.
